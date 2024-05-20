@@ -1,0 +1,26 @@
+<nz-calendar (nzSelectChange)="onDateSelect($event)">
+  <ul *nzDateCell="let date">
+    <div
+      class="cell-content"
+      (mouseenter)="showAddIcon.set(true)"
+      (mouseleave)="showAddIcon.set(false)"
+    >
+      @for (task of getTasksForDate(date); track trackByTaskId) {
+      <li>
+        <nz-badge nzStatus="processing" [nzText]="task.taskTitle"></nz-badge>
+      </li>
+      } @if (getTasksForDate(date).length === 0) {
+      <div>
+        @if (showAddIcon()) {
+        <a
+          nz-icon
+          nzType="plus"
+          nzTheme="outline"
+          (click)="openAddTaskModal(date)"
+        ></a>
+        }
+      </div>
+      }
+    </div>
+  </ul>
+</nz-calendar>

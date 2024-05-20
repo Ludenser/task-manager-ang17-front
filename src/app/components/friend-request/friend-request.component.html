@@ -1,0 +1,46 @@
+<nz-card nzTitle="Запросы в друзья">
+  <div class="income-requests-wrapper">
+    @for (request of friendRequests(); track $index) {
+    <nz-alert
+      c
+      nzType="info"
+      [nzMessage]="request.email!"
+      nzDescription="Запрос в друзья"
+      nzShowIcon
+      [nzAction]="actionTemplate1"
+      (nzOnClose)="acceptRequest(request.email!)"
+    >
+      <ng-template #actionTemplate1>
+        <nz-space nzDirection="vertical">
+          <button
+            *nzSpaceItem
+            nz-button
+            nzSize="small"
+            nzType="primary"
+            (click)="acceptRequest(request.email!)"
+          >
+            Принять
+          </button>
+        </nz-space>
+      </ng-template>
+    </nz-alert>
+    }
+  </div>
+  <div class="form-wrapper">
+    <form [formGroup]="requestForm" (ngSubmit)="sendFriendRequest()">
+      <nz-form-item>
+        <nz-form-control>
+          <nz-form-label>Добавить друга</nz-form-label>
+          <input
+            nz-input
+            formControlName="email"
+            placeholder="Email пользователя"
+          />
+        </nz-form-control>
+      </nz-form-item>
+      <button nz-button nzType="primary" [disabled]="!requestForm.valid">
+        Отправить
+      </button>
+    </form>
+  </div>
+</nz-card>

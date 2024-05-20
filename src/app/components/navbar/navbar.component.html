@@ -1,0 +1,10 @@
+<div class="navbar" [ngClass]="{ 'navbar-login-page': !isLoginPage }">
+  <div
+    class="navbar-right"
+    [ngClass]="{ 'navbar-right-login-page': !isLoginPage }"
+  >
+    @if (isLoginPage) {
+    <app-user-profile-widget></app-user-profile-widget>
+    }
+  </div>
+</div>

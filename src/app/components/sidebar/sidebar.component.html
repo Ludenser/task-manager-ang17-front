@@ -1,0 +1,27 @@
+<ul nz-menu nzTheme="light" nzMode="inline">
+  <ng-container *ngFor="let item of menuItems">
+    <li
+      *ngIf="item.children; else singleItem"
+      nz-submenu
+      [nzTitle]="item.label"
+      [nzIcon]="item.icon || 'deployment-unit'"
+    >
+      <ul>
+        <li
+          nz-menu-item
+          nzMatchRouter
+          *ngFor="let child of item.children"
+          [routerLink]="[child.path]"
+        >
+          <a>{{ child.label }}</a>
+        </li>
+      </ul>
+    </li>
+    <ng-template #singleItem>
+      <li nz-menu-item nzMatchRouter [routerLink]="[item.path]">
+        <span nz-icon [nzType]="item.icon || 'deployment-unit'"></span>
+        <span>{{ item.label }}</span>
+      </li>
+    </ng-template>
+  </ng-container>
+</ul>

@@ -1,0 +1,35 @@
+<nz-layout class="app-layout">
+  @if (isAuth) {
+  <nz-sider class="menu-sidebar">
+    <sb-sidebar></sb-sidebar>
+  </nz-sider>
+  }
+  <nz-layout>
+    @if (isAuth) {
+    <nz-header>
+      <app-navbar [isLoginPage]="isAuth"></app-navbar>
+    </nz-header>
+    }
+    <nz-content>
+      <div class="inner-content">
+        <router-outlet></router-outlet>
+      </div>
+    </nz-content>
+  </nz-layout>
+</nz-layout>
+
+<ng-template #notificationTemplate let-data="data">
+  <div class="notice-wrapper">
+    <p>
+      Пользователь <b>{{ data.email }}</b> добавил вас в друзья.
+    </p>
+    <button
+      class="friend-request-btn"
+      nz-button
+      nzType="primary"
+      (click)="acceptRequest(data.email)"
+    >
+      Принять
+    </button>
+  </div>
+</ng-template>

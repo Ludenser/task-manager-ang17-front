@@ -1,0 +1,12 @@
+<nz-card nzTitle="Ваши друзья">
+  <nz-list [nzDataSource]="friends()" [nzRenderItem]="item">
+    <ng-template #item let-friend>
+      <nz-list-item>
+        <nz-list-item-meta
+          [nzTitle]="friend.email"
+          [nzDescription]="friend.status"
+        ></nz-list-item-meta>
+      </nz-list-item>
+    </ng-template>
+  </nz-list>
+</nz-card>
