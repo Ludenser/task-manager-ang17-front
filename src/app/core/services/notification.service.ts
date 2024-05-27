@@ -23,7 +23,7 @@ export class NotificationService {
     this.loadFriendRequests();
     this.loadFriendRequestsInterval = setInterval(
       () => this.loadFriendRequests(),
-      10000
+      100000
     );
   }
 

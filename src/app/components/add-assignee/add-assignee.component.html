@@ -1,0 +1,22 @@
+<form nz-form [formGroup]="form" (ngSubmit)="submitForm()">
+  <nz-form-item>
+    <nz-form-label nzNoColon [nzSm]="4" nzFor="mention"></nz-form-label>
+    <nz-form-control [nzSm]="16" nzErrorTip="Введи email">
+      <nz-mention
+        #mentions
+        [nzSuggestions]="suggestions()"
+        (nzOnSearchChange)="onMentionsSearchChange($event)"
+      >
+        <textarea
+          rows="1"
+          id="mentionTextarea"
+          placeholder="Friend email"
+          formControlName="mention"
+          nzMentionTrigger
+          nz-input
+          [(ngModel)]="inputValue"
+        ></textarea>
+      </nz-mention>
+    </nz-form-control>
+  </nz-form-item>
+</form>

@@ -1,26 +1,31 @@
 <nz-calendar (nzSelectChange)="onDateSelect($event)">
-  <ul *nzDateCell="let date">
-    <div
-      class="cell-content"
-      (mouseenter)="showAddIcon.set(true)"
-      (mouseleave)="showAddIcon.set(false)"
-    >
+  <ul *nzDateCell="let date" class="events">
+    @if (getTasksForDate(date).length === 0) {
+    <div class="context-area" (contextmenu)="contextMenu($event, menu1)"></div>
+    <nz-dropdown-menu #menu1="nzDropdownMenu">
+      <ul nz-menu>
+        <li nz-menu-item (click)="openAddTaskModal(date)">Создать</li>
+      </ul>
+    </nz-dropdown-menu>
+    } @else {
+    <div class="cell-content">
       @for (task of getTasksForDate(date); track trackByTaskId) {
-      <li>
-        <nz-badge nzStatus="processing" [nzText]="task.taskTitle"></nz-badge>
+      <li (contextmenu)="contextMenu($event, menu2)">
+        <nz-badge [nzStatus]="getTaskStatusForNz(task.task_critical!)">
+          <a (click)="openTask(task.task_id!)">{{ task.task_title }}</a>
+        </nz-badge>
+        <nz-dropdown-menu #menu2="nzDropdownMenu">
+          <ul nz-menu>
+            <li nz-menu-item (click)="openAddAssigneeModal(task.task_id!)">
+              Добавить пользователя
+            </li>
+            <li nz-menu-item (click)="openAddTaskModal(date)">Изменить</li>
+            <li nz-menu-item (click)="deleteTask(task.task_id!)">Удалить</li>
+          </ul>
+        </nz-dropdown-menu>
       </li>
-      } @if (getTasksForDate(date).length === 0) {
-      <div>
-        @if (showAddIcon()) {
-        <a
-          nz-icon
-          nzType="plus"
-          nzTheme="outline"
-          (click)="openAddTaskModal(date)"
-        ></a>
-        }
-      </div>
       }
     </div>
+    }
   </ul>
 </nz-calendar>

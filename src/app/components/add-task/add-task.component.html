@@ -1,48 +1,55 @@
 <form [formGroup]="addTaskForm" (ngSubmit)="submitForm()">
   <nz-form-item>
-    <nz-form-label [nzSpan]="6" nzFor="taskTitle">Title</nz-form-label>
+    <nz-form-label [nzSpan]="6" nzFor="task_title">Title</nz-form-label>
     <nz-form-control [nzSpan]="14" nzErrorTip="Please input the task title">
-      <input nz-input formControlName="taskTitle" id="taskTitle" />
+      <input nz-input formControlName="task_title" id="task_title" />
     </nz-form-control>
   </nz-form-item>
   <nz-form-item>
-    <nz-form-label [nzSpan]="6" nzFor="taskDescription"
+    <nz-form-label [nzSpan]="6" nzFor="task_description"
       >Description</nz-form-label
     >
     <nz-form-control
       [nzSpan]="14"
       nzErrorTip="Please input the task description"
     >
-      <input nz-input formControlName="taskDescription" id="taskDescription" />
+      <input
+        nz-input
+        formControlName="task_description"
+        id="task_description"
+      />
     </nz-form-control>
   </nz-form-item>
   <nz-form-item>
-    <nz-form-label [nzSpan]="6" nzFor="taskStartTime">Start Time</nz-form-label>
+    <nz-form-label [nzSpan]="6" nzFor="task_critical"
+      >Task Priority</nz-form-label
+    >
+    <nz-form-control [nzSpan]="14" nzErrorTip="Please select task priority">
+      <nz-select formControlName="task_critical">
+        <nz-option nzValue="LOW" nzLabel="Низкий"></nz-option>
+        <nz-option nzValue="NORMAL" nzLabel="Обычный"></nz-option>
+        <nz-option nzValue="HIGH" nzLabel="Высокий"></nz-option>
+      </nz-select>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label [nzSpan]="6" nzFor="task_start_time"
+      >Start Time</nz-form-label
+    >
     <nz-form-control [nzSpan]="14" nzErrorTip="Please select the start time">
       <nz-date-picker
-        formControlName="taskStartTime"
-        id="taskStartTime"
+        formControlName="task_start_time"
+        id="task_start_time"
       ></nz-date-picker>
     </nz-form-control>
   </nz-form-item>
   <nz-form-item>
-    <nz-form-label [nzSpan]="6" nzFor="taskEndTime">End Time</nz-form-label>
+    <nz-form-label [nzSpan]="6" nzFor="task_end_time">End Time</nz-form-label>
     <nz-form-control [nzSpan]="14" nzErrorTip="Please select the end time">
       <nz-date-picker
-        formControlName="taskEndTime"
-        id="taskEndTime"
+        formControlName="task_end_time"
+        id="task_end_time"
       ></nz-date-picker>
     </nz-form-control>
   </nz-form-item>
-  <div class="modal-footer">
-    <button nz-button nzType="default" (click)="cancel()">Cancel</button>
-    <button
-      nz-button
-      nzType="primary"
-      [disabled]="!addTaskForm.valid"
-      type="submit"
-    >
-      Add Task
-    </button>
-  </div>
 </form>

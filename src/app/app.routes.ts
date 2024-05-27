@@ -43,7 +43,6 @@ export const routes: Routes = [
                 (c) => c.ProfileComponent
               ),
           },
-          { path: '', redirectTo: 'profile', pathMatch: 'full' },
         ],
       },
       { path: '', pathMatch: 'full', redirectTo: 'login' },
