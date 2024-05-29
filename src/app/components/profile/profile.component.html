@@ -34,10 +34,17 @@
       <nz-descriptions-item nzTitle="Id">{{ profile.id }}</nz-descriptions-item>
       @if (profile.friendList!.length > 0) {
       <nz-descriptions-item nzTitle="Friends">
-        <ul>
-          @for (friend of profile.friendList; track $index) {
-          <li>{{ friend.email }}</li>
-          }
+        <ul style="list-style-type: none; padding: 0">
+          @for (friend of profile.friendList; track $index) { @if (friend.status
+          === 'ACCEPTED') {
+          <li>
+            <span nz-icon type="user">{{ friend.email }}</span>
+          </li>
+          } @else if (friend.status === 'SENT') {
+          <li>
+            <span nz-icon type="sync" [nzSpin]="true">{{ friend.email }}</span>
+          </li>
+          } }
         </ul>
       </nz-descriptions-item>
       }

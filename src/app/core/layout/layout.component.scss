@@ -8,7 +8,7 @@ nz-header {
   position: relative;
   z-index: 10;
   min-height: 100vh;
-  box-shadow: 2px 0 6px rgba(0,21,41,.35);
+  box-shadow: 2px 0 6px rgba(0, 21, 41, 0.35);
 }
 
 .app-layout {
@@ -16,17 +16,15 @@ nz-header {
 }
 
 nz-content {
-  margin: 24px;
+  margin: 12px;
 }
 
 .inner-content {
   padding: 24px;
-  background: #fff;
   flex-grow: 1;
 }
 
 .friend-request-btn {
-
 }
 
 .notice-wrapper {
@@ -35,5 +33,4 @@ nz-content {
   padding: 10px;
   flex-direction: column;
   align-items: flex-end;
-
 }

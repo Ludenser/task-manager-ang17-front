@@ -1,6 +1,8 @@
 <div class="container">
-  <app-friend-request
-    (friendAccepted)="friendsList.loadFriends()"
-  ></app-friend-request>
+  <div class="friend-request-container">
+    <app-friend-request
+      (friendAccepted)="friendsList.loadFriends()"
+    ></app-friend-request>
+  </div>
   <app-friends-list #friendsList></app-friends-list>
 </div>

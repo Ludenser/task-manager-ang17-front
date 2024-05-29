@@ -36,7 +36,7 @@
             ],
             "styles": [
               "src/theme.less",
-              "src/styles.scss"
+              "src/styles.less"
             ],
             "scripts": []
           },
@@ -46,7 +46,7 @@
                 {
                   "type": "initial",
                   "maximumWarning": "500kb",
-                  "maximumError": "1mb"
+                  "maximumError": "2mb"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -96,7 +96,8 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss"
+              "src/theme.less",
+              "src/styles.less"
             ],
             "scripts": []
           }

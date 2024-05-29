@@ -1,16 +1,3 @@
-.navbar-trigger {
-  display: flex;
-  align-items: center;
-  height: 64px;
-  font-size: 20px;
-  cursor: pointer;
-  transition: all .3s,padding 0s;
-}
-
-.trigger:hover {
-  color: #1890ff;
-}
-
 .navbar {
   display: flex;
   align-items: center;
@@ -18,12 +5,11 @@
   position: relative;
   height: 64px;
   padding: 0 24px;
-  background: #fff;
-  box-shadow: 0 1px 4px rgba(0,21,41,.08);
+  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
 }
 
 .navbar-login-page {
-  flex-direction: row-reverse
+  flex-direction: row-reverse;
 }
 
 .navbar-right {
