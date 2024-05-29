@@ -68,13 +68,14 @@ export class SignupComponent {
       .register(email, password, firstName, lastName, nickName)
       .subscribe({
         next: () => {
-          this.successMessage.set('Registration successful!');
+          this.successMessage.set('Успешно!');
           this.errorMessage = null;
           setTimeout(() => this.router.navigate(['login']), 1000);
         },
         error: (error) => {
           this.registerForm.reset();
-          this.errorMessage = error.message;
+          this.errorMessage =
+            'Пользователь с указанными данными уже сущесвтует / Нет связи с сервером';
           this.successMessage.set('');
         },
       });

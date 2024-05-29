@@ -60,12 +60,12 @@ export class LoginComponent {
     this.authService.login(username, password).subscribe({
       next: () => {
         this.errorMessage = null;
-        setTimeout(() => this.successMessage.set('Success login!'), 500);
+        setTimeout(() => this.successMessage.set('Успешный вход!'), 500);
         setTimeout(() => this.router.navigate(['/profile']), 2000);
       },
       error: (error) => {
         this.loginForm.reset();
-        this.errorMessage = error.message;
+        this.errorMessage = 'Неверные данные или нет связи с сервером';
         this.successMessage.set(null);
       },
     });
