@@ -2,21 +2,16 @@
   <nz-form-item>
     <nz-form-label nzNoColon [nzSm]="4" nzFor="mention"></nz-form-label>
     <nz-form-control [nzSm]="16" nzErrorTip="Введи email">
-      <nz-mention
-        #mentions
-        [nzSuggestions]="suggestions()"
-        (nzOnSearchChange)="onMentionsSearchChange($event)"
+      <nz-select
+        formControlName="mention"
+        nzMode="tags"
+        nzPlaceHolder="Email пользователя"
+        [nzLoading]="loadingFriendsList()"
       >
-        <textarea
-          rows="1"
-          id="mentionTextarea"
-          placeholder="Friend email"
-          formControlName="mention"
-          nzMentionTrigger
-          nz-input
-          [(ngModel)]="inputValue"
-        ></textarea>
-      </nz-mention>
+        @for (friend of suggestions(); track $index) {
+        <nz-option [nzLabel]="friend" [nzValue]="friend"></nz-option>
+        }
+      </nz-select>
     </nz-form-control>
   </nz-form-item>
 </form>

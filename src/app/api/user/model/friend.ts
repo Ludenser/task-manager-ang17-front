@@ -14,6 +14,7 @@ export interface Friend {
   id?: number;
   email?: string;
   status?: Friend.StatusEnum;
+  nickName?: string;
 }
 export namespace Friend {
   export type StatusEnum = 'PENDING' | 'ACCEPTED' | 'SENT';

@@ -17,3 +17,17 @@
 .context-area:hover {
   background-color: #00000041;
 }
+
+.clicker-area {
+  height: 20px;
+  text-align: center;
+  font-size: xx-small;
+  color: rgb(109, 110, 110);
+  border: 1px dashed rgba(173, 173, 173, 0.17);
+  border-radius: 10px;
+  opacity: 0.5;
+}
+
+.clicker-area:hover {
+  opacity: 1;
+}

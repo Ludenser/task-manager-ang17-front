@@ -1,12 +1,16 @@
-<nz-card nzTitle="Ваши друзья">
-  <nz-list [nzDataSource]="friends()" [nzRenderItem]="item">
-    <ng-template #item let-friend>
-      <nz-list-item>
-        <nz-list-item-meta
-          [nzTitle]="friend.email"
-          [nzDescription]="friend.status"
-        ></nz-list-item-meta>
-      </nz-list-item>
-    </ng-template>
-  </nz-list>
+<nz-card [nzLoading]="loading()" nzTitle="Ваши друзья: {{ friends().length }}">
+  <div nz-flex [nzGap]="20">
+    @for (friend of friends(); track $index) {
+    <nz-card>
+      <nz-card-meta
+        [nzAvatar]="avatarTemplate"
+        [nzTitle]="friend.nickName ? friend.nickName : friend.email!"
+        [nzDescription]="friend.nickName ? friend.email! : ''"
+      ></nz-card-meta>
+    </nz-card>
+    }
+  </div>
 </nz-card>
+<ng-template #avatarTemplate>
+  <nz-avatar nzIcon="user"></nz-avatar>
+</ng-template>

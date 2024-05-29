@@ -6,7 +6,8 @@
     <div nz-flex nzGap="12px" class="profile-header" nzAlign="center">
       <nz-avatar [nzSize]="64" nzIcon="user"></nz-avatar>
       <div>
-        <h2>{{ profile.username }}</h2>
+        <h2>{{ profile.nickName }}</h2>
+        <h3>{{ profile.username }}</h3>
         <nz-upload
           nzAction="https://www.mocky.io/v2/5cc8019d300000980a055e76"
           [nzHeaders]="{ authorization: 'authorization-text' }"
@@ -34,15 +35,31 @@
       <nz-descriptions-item nzTitle="Id">{{ profile.id }}</nz-descriptions-item>
       @if (profile.friendList!.length > 0) {
       <nz-descriptions-item nzTitle="Friends">
-        <ul style="list-style-type: none; padding: 0">
+        <ul style="list-style-type: none; padding: 0; margin: 0">
           @for (friend of profile.friendList; track $index) { @if (friend.status
           === 'ACCEPTED') {
           <li>
-            <span nz-icon type="user">{{ friend.email }}</span>
+            <div style="display: flex; align-items: center">
+              <span
+                style="margin-right: 10px"
+                nz-icon
+                nzType="user"
+                nzTheme="outline"
+              ></span>
+              <span>{{ friend.email }}</span>
+            </div>
           </li>
           } @else if (friend.status === 'SENT') {
           <li>
-            <span nz-icon type="sync" [nzSpin]="true">{{ friend.email }}</span>
+            <div style="display: flex; align-items: center">
+              <span
+                style="margin-right: 10px"
+                nz-icon
+                nzType="sync"
+                [nzSpin]="true"
+              ></span>
+              <span>{{ friend.email }}</span>
+            </div>
           </li>
           } }
         </ul>

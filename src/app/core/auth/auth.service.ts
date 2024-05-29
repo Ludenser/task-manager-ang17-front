@@ -53,14 +53,15 @@ export class AuthService {
     email: string,
     password: string,
     firstName: string,
-    lastName: string
+    lastName: string,
+    nickName: string = ''
   ): Observable<any> {
     const userInfo: UserInfo = {
       email,
       password,
       firstName,
       lastName,
-      nickName: '',
+      nickName,
       enabled: true,
       username: email,
       accountNonLocked: true,

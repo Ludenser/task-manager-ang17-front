@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  ViewChild,
   ViewEncapsulation,
   signal,
 } from '@angular/core';
@@ -16,13 +15,10 @@ import {
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
-import {
-  MentionOnSearchTypes,
-  NzMentionComponent,
-  NzMentionModule,
-} from 'ng-zorro-antd/mention';
+import { NzMentionComponent, NzMentionModule } from 'ng-zorro-antd/mention';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
+import { NzSelectModule } from 'ng-zorro-antd/select';
 import { TaskControllerService } from '../../api/core/services/taskController.service';
 import { FriendRecord } from '../../api/user/model/friendRecord';
 import { UserControllerService } from '../../api/user/services/userController.service';
@@ -39,6 +35,7 @@ import { UserControllerService } from '../../api/user/services/userController.se
     NzMentionComponent,
     NzMentionModule,
     ReactiveFormsModule,
+    NzSelectModule,
   ],
   templateUrl: './add-assignee.component.html',
   styleUrl: './add-assignee.component.scss',
@@ -46,10 +43,9 @@ import { UserControllerService } from '../../api/user/services/userController.se
 })
 export class AddAssigneeComponent {
   loadingFriendsList = signal<boolean>(false);
-  suggestions = signal<string[]>(['seee']);
+  suggestions = signal<string[]>([]);
   form: FormGroup;
   inputValue: string = '';
-  @ViewChild('mentions', { static: true }) mentionChild!: NzMentionComponent;
 
   constructor(
     // @Inject(NZ_MODAL_DATA) public data: ModalData,
@@ -60,21 +56,37 @@ export class AddAssigneeComponent {
     private fb: NonNullableFormBuilder
   ) {
     this.form = this.fb.group({
-      mention: ['@afc163 ', [Validators.required]],
+      mention: [[], [Validators.required]],
     });
+    this.loadFriends();
   }
 
-  onMentionsSearchChange({ value }: MentionOnSearchTypes) {
-    console.log('sadasasd', value);
+  // mentionValidator: ValidatorFn = (control: AbstractControl) => {
+  //   if (!control.value) {
+  //     return { required: true };
+  //   }
 
+  //   const mentions = this.mentionChild?.getMentions() || [];
+
+  //   const hasDuplicates = mentions.some((mention, index) => {
+  //     return mentions.indexOf(mention) !== index;
+  //   });
+
+  //   if (hasDuplicates) {
+  //     return { duplicate: true, error: true };
+  //   }
+
+  //   return null;
+  // };
+
+  loadFriends() {
     this.loadingFriendsList.set(true);
     this.userService.getFriends().subscribe({
       next: (result: FriendRecord[]) => {
-        console.log('friends', result);
-
         this.suggestions.set(
           result.map((friend: FriendRecord) => friend.email)
         );
+        console.log('friends', this.suggestions());
         this.loadingFriendsList.set(false);
       },
       error: (error) => {
@@ -88,11 +100,11 @@ export class AddAssigneeComponent {
     if (this.form.valid) {
       const processAssign = () => {
         const req = this.form.value;
-        const mention = req.mention as string;
-        const modifiedMention = mention.replace(/^@/, ''); // Удаляем первый символ '@'
+        console.log(req);
 
+        const mention = req.mention as string[];
         return {
-          emails: [modifiedMention],
+          emails: mention,
         };
       };
       this.modal.close(processAssign());

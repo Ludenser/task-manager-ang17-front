@@ -45,6 +45,7 @@ export class SignupComponent {
   ) {
     this.registerForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
+      nickName: [''],
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]],
       password: ['', [Validators.required]],
@@ -59,21 +60,24 @@ export class SignupComponent {
     this.registerForm.markAsPending();
     const email = this.registerForm.get('email')!.value;
     const password = this.registerForm.get('password')!.value;
+    const nickName = this.registerForm.get('nickName')!.value;
     const firstName = this.registerForm.get('firstName')!.value;
     const lastName = this.registerForm.get('lastName')!.value;
 
-    this.authService.register(email, password, firstName, lastName).subscribe({
-      next: () => {
-        this.successMessage.set('Registration successful!');
-        this.errorMessage = null;
-        setTimeout(() => this.router.navigate(['login']), 1000);
-      },
-      error: (error) => {
-        this.registerForm.reset();
-        this.errorMessage = error.message;
-        this.successMessage.set('');
-      },
-    });
+    this.authService
+      .register(email, password, firstName, lastName, nickName)
+      .subscribe({
+        next: () => {
+          this.successMessage.set('Registration successful!');
+          this.errorMessage = null;
+          setTimeout(() => this.router.navigate(['login']), 1000);
+        },
+        error: (error) => {
+          this.registerForm.reset();
+          this.errorMessage = error.message;
+          this.successMessage.set('');
+        },
+      });
   }
 
   navigateToLogin() {

@@ -1,30 +1,63 @@
 <nz-calendar (nzSelectChange)="onDateSelect($event)">
   <ul *nzDateCell="let date" class="events">
-    @if (getTasksForDate(date).length === 0) {
-    <div class="context-area" (contextmenu)="contextMenu($event, menu1)"></div>
     <nz-dropdown-menu #menu1="nzDropdownMenu">
       <ul nz-menu>
         <li nz-menu-item (click)="openAddTaskModal(date)">Создать</li>
       </ul>
     </nz-dropdown-menu>
-    } @else {
-    <div class="cell-content">
-      @for (task of getTasksForDate(date); track trackByTaskId) {
-      <li (contextmenu)="contextMenu($event, menu2)">
-        <nz-badge [nzStatus]="getTaskStatusForNz(task.task_critical!)">
-          <a (click)="openTask(task.task_id!)">{{ task.task_title }}</a>
+    @if (getTasksForDate(date).length === 0) {
+    <div class="context-area" (contextmenu)="contextMenu($event, menu1)"></div>
+
+    } @else { @for (task of getTasksForDate(date); track trackByTaskId) {
+    <li
+      style="width: 100%; padding-left: 10px; margin-bottom: 3px"
+      (contextmenu)="contextMenu($event, menu2)"
+    >
+      <a (click)="openTask(task.task_id!)">
+        @switch (task.task_status) { @case ('POSTPONED') {
+        <nz-badge [nzStatus]="getTaskPriorityForNz(task.task_critical!)">
+          <span nz-typography nzType="secondary">{{ task.task_title }}</span>
         </nz-badge>
-        <nz-dropdown-menu #menu2="nzDropdownMenu">
-          <ul nz-menu>
-            <li nz-menu-item (click)="openAddAssigneeModal(task.task_id!)">
-              Добавить пользователя
-            </li>
-            <li nz-menu-item (click)="openAddTaskModal(date)">Изменить</li>
-            <li nz-menu-item (click)="deleteTask(task.task_id!)">Удалить</li>
-          </ul>
-        </nz-dropdown-menu>
-      </li>
-      }
+        } @case ('DONE') {
+        <span>
+          <span
+            style="margin-right: 5px"
+            nz-icon
+            [nzType]="'check-circle'"
+            [nzTheme]="'twotone'"
+            [nzTwotoneColor]="'#52c41a'"
+          ></span>
+          <span nz-typography nzType="success">{{ task.task_title }}</span>
+        </span>
+        } @default {
+        <nz-badge [nzStatus]="getTaskPriorityForNz(task.task_critical!)">
+          <span nz-typography>{{ task.task_title }}</span>
+        </nz-badge>
+        } }
+      </a>
+      <nz-dropdown-menu #menu2="nzDropdownMenu">
+        <ul nz-menu>
+          @if (task.task_status !== 'DONE') {
+          <li nz-menu-item (click)="onDone(task, task.task_id!)">
+            <span>Отметить как </span
+            ><span nz-typography nzType="success">выполнено</span>
+          </li>
+          <li nz-menu-item (click)="openAddAssigneeModal(task.task_id!)">
+            Добавить пользователя
+          </li>
+          }
+          <li nz-menu-item (click)="openChangeTaskModal(task.task_id!)">
+            Изменить
+          </li>
+          <li nz-menu-item nzDanger (click)="onDelete(task.task_id!)">
+            Удалить
+          </li>
+        </ul>
+      </nz-dropdown-menu>
+    </li>
+    }
+    <div class="clicker-area" (click)="openAddTaskModal(date)">
+      <span nz-typography>+ Add task</span>
     </div>
     }
   </ul>

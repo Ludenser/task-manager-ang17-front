@@ -1,4 +1,5 @@
 import { CommonModule, formatDate } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -22,9 +23,18 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzMentionModule } from 'ng-zorro-antd/mention';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { NzModalService } from 'ng-zorro-antd/modal';
+import { NzModalRef, NzModalService } from 'ng-zorro-antd/modal';
 import { NzPopoverModule } from 'ng-zorro-antd/popover';
-import { Observable, Subscription, catchError, map } from 'rxjs';
+import { NzTypographyModule } from 'ng-zorro-antd/typography';
+import {
+  Observable,
+  Subscription,
+  catchError,
+  map,
+  switchMap,
+  tap,
+} from 'rxjs';
+import { MembersResponse } from '../../api/core/model/membersResponse';
 import { Task } from '../../api/core/model/task';
 import { TaskRecord } from '../../api/core/model/taskRecord';
 import { TaskControllerService } from '../../api/core/services/taskController.service';
@@ -46,6 +56,7 @@ import { AddTaskComponent } from '../add-task/add-task.component';
     NzMentionModule,
     NzInputModule,
     FormsModule,
+    NzTypographyModule,
   ],
   templateUrl: './calendar-view.component.html',
   styleUrl: './calendar-view.component.scss',
@@ -98,8 +109,8 @@ export class CalendarViewComponent implements OnInit {
       }),
       catchError((error: any) => {
         console.error('Failed to load tasks', error);
-        this.msg.error(error);
-        throw error;
+        this.msg.error(error.error.message);
+        throw error.error;
       })
     );
   }
@@ -113,8 +124,22 @@ export class CalendarViewComponent implements OnInit {
       }),
       catchError((error: any) => {
         console.error('Failed to load task by id', error);
-        this.msg.error(error);
-        throw error;
+        this.msg.error(error.error.message);
+        throw error.error;
+      })
+    );
+  }
+
+  loadTaskMembers(taskId: number) {
+    return this.taskService.getAllMembersInTask(taskId).pipe(
+      map((members: MembersResponse[]) => {
+        console.log(members);
+        return members;
+      }),
+      catchError((error: any) => {
+        console.error('Failed to load members by id', error);
+        this.msg.error(error.error.message);
+        throw error.error;
       })
     );
   }
@@ -152,33 +177,41 @@ export class CalendarViewComponent implements OnInit {
   }
 
   openTask(taskId: number) {
-    this.loadTaskById(taskId).subscribe({
-      next: (task) => {
-        this.modal.create({
-          nzTitle: 'Task info',
-          nzContent: AddTaskComponent,
-          nzData: {
-            task: task,
-            infoMode: true,
-          },
-          nzFooter: null,
-        });
-      },
-      error: (error) => {
-        console.error('Failed to load task by id', error);
-        this.msg.error(error);
-      },
-    });
+    this.loadTaskMembers(taskId)
+      .pipe(
+        switchMap((members) => {
+          return this.loadTaskById(taskId).pipe(
+            tap((task) => {
+              this.modal.create({
+                nzTitle: 'Информация о задаче',
+                nzContent: AddTaskComponent,
+                nzData: {
+                  task: task,
+                  infoMode: true,
+                  members: members.map((member) => member.email),
+                },
+                nzFooter: null,
+              });
+            })
+          );
+        })
+      )
+      .subscribe({
+        error: (error) => {
+          console.error('Failed to load task and members', error);
+          this.msg.error(error.error.message);
+        },
+      });
   }
 
-  getTaskStatusForNz(status: Task.CriticalEnum): string {
+  getTaskPriorityForNz(status: Task.CriticalEnum): string {
     switch (status) {
       case 'HIGH':
         return 'error';
       case 'LOW':
-        return 'processing';
-      case 'NORMAL':
         return 'default';
+      case 'NORMAL':
+        return 'processing';
       default:
         return 'default';
     }
@@ -188,12 +221,60 @@ export class CalendarViewComponent implements OnInit {
     this.taskService.updateTask(task, taskId).subscribe({
       next: () => {
         this.loadTasks().subscribe();
-        this.msg.success('Задача удалена');
+        this.msg.success('Задача обновлена');
       },
       error: (error) => {
         console.error('Failed to delete task', error);
-        this.msg.error(error);
+        this.msg.error(error.error.message);
       },
+    });
+  }
+
+  setDone(task: TaskRecord, taskId: number) {
+    this.taskService
+      .updateTask({ ...task, task_status: 'DONE' }, taskId)
+      .subscribe({
+        next: () => {
+          this.loadTasks().subscribe();
+          this.msg.success('Задача завершена.');
+        },
+        error: (error) => {
+          console.error('Failed to delete task', error);
+          this.msg.error(error.error.message);
+        },
+      });
+  }
+
+  onDelete(taskId: number): void {
+    this.proceedConfirm('delete', () => this.deleteTask(taskId));
+  }
+
+  onDone(task: TaskRecord, taskId: number): void {
+    this.proceedConfirm('setDone', () => this.setDone(task, taskId));
+  }
+
+  proceedConfirm(action: 'delete' | 'setDone', onConfirm: () => void): void {
+    let nzTitle,
+      nzOkText = '';
+    switch (action) {
+      case 'delete':
+        nzTitle = 'Вы уверены, что хотите удалить задачу?';
+        nzOkText = 'Удалить';
+        break;
+      case 'setDone':
+        nzTitle = 'Вы уверены, что хотите отметить задачу выполненной?';
+        nzOkText = 'Да';
+        break;
+      default:
+        break;
+    }
+    this.modal.confirm({
+      nzTitle,
+      nzOkText,
+      nzCancelText: 'Отменить',
+      nzCentered: true,
+      nzOkDanger: true,
+      nzOnOk: onConfirm,
     });
   }
 
@@ -205,7 +286,7 @@ export class CalendarViewComponent implements OnInit {
       },
       error: (error) => {
         console.error('Failed to delete task', error);
-        this.msg.error(error);
+        this.msg.error(error.error.message);
       },
     });
   }
@@ -217,13 +298,22 @@ export class CalendarViewComponent implements OnInit {
       task_end_time: date,
     });
     const modal = this.modal.create({
-      nzTitle: 'Add Task',
+      nzTitle: 'Создание задачи',
       nzContent: AddTaskComponent,
       nzData: {
         date: date,
       },
+      nzOkDisabled: true,
       nzOkText: 'Создать',
       nzOnOk: (child) => child.submitForm(),
+    });
+
+    modal.afterOpen.subscribe(() => {
+      const modalForm = modal.getContentComponent()?.addTaskForm;
+
+      modalForm.valueChanges.subscribe(() => {
+        modal.updateConfig({ nzOkDisabled: modalForm.invalid });
+      });
     });
     modal.afterClose.subscribe((result: TaskRecord) => {
       if (result) {
@@ -234,33 +324,96 @@ export class CalendarViewComponent implements OnInit {
             this.loadTasks().subscribe();
             this.msg.success('Задача создана');
           },
-          error: (error) => {
+          error: (error: HttpErrorResponse) => {
             console.error('Failed to add task', error);
-            this.msg.error(error);
+            this.msg.error(error.error.message);
           },
         });
       }
     });
   }
 
+  openChangeTaskModal(taskId: number): void {
+    let modal: NzModalRef<AddTaskComponent, any>;
+    this.loadTaskById(taskId).subscribe({
+      next: (task) => {
+        modal = this.modal.create({
+          nzTitle: 'Изменение задачи',
+          nzContent: AddTaskComponent,
+          nzData: {
+            task: task,
+            updateMode: true,
+          },
+          nzOkDisabled: true,
+          nzOkText: 'Обновить',
+          nzOnOk: (child) => child.submitForm(),
+        });
+        modal.afterOpen.subscribe(() => {
+          const modalForm = modal.getContentComponent()?.addTaskForm;
+
+          modalForm.valueChanges.subscribe(() => {
+            modal.updateConfig({ nzOkDisabled: modalForm.invalid });
+          });
+        });
+        modal.afterClose.subscribe((result) => {
+          if (result) {
+            console.log('последний резулт', result);
+
+            this.taskService
+              .updateTask({ ...task, ...result }, taskId)
+              .subscribe({
+                next: () => {
+                  this.loadTasks().subscribe();
+                  this.msg.success('Задача обновлена.');
+                },
+                error: (error) => {
+                  console.error('Failed to update task', error);
+                  this.msg.error(error.error.message);
+                },
+              });
+          }
+        });
+      },
+      error: (error) => {
+        console.error('Failed to load task by id', error);
+        this.msg.error(error);
+      },
+    });
+  }
+
   openAddAssigneeModal(taskId: number): void {
     const modal = this.modal.create({
-      nzTitle: 'User Assign',
+      nzTitle: 'Добавление пользователя',
       nzContent: AddAssigneeComponent,
       nzData: {
         taskId,
       },
-      nzOkText: 'Добавление пользователя',
+      nzOkDisabled: true,
+      nzOkText: 'Добавить',
       nzOnOk: (child) => child.submitForm(),
     });
+
+    modal.afterOpen.subscribe(() => {
+      const modalForm = modal.getContentComponent()?.form;
+
+      modalForm.valueChanges.subscribe(() => {
+        modal.updateConfig({ nzOkDisabled: modalForm.invalid });
+      });
+    });
+
     modal.afterClose.subscribe((result) => {
       if (result) {
         console.log('result', result);
-
         this.taskService.assignTask({ ...result, taskId }, taskId).subscribe({
-          next: () => {
-            this.loadTasks().subscribe();
-            this.msg.success('Пользователь прикреплен');
+          next: (res) => {
+            let busyUsers: string | undefined;
+            if (res.length > 0) {
+              busyUsers = res.map((error) => error.id).join(',');
+              this.msg.warning(`${busyUsers}, занят/-ы в это время`);
+            } else {
+              this.loadTasks().subscribe();
+              this.msg.success('Пользователи прикреплены');
+            }
           },
           error: (error) => {
             console.error('Failed assignee to task', error);

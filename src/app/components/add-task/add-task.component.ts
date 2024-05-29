@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
+  FormsModule,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
@@ -13,12 +14,15 @@ import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NZ_MODAL_DATA, NzModalRef } from 'ng-zorro-antd/modal';
 import { NzSelectModule } from 'ng-zorro-antd/select';
+import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { TaskRecord } from '../../api/core/model/taskRecord';
 
 interface ModalData {
   date?: Date;
   infoMode?: boolean;
+  updateMode?: boolean;
   task?: TaskRecord;
+  members?: string[];
 }
 @Component({
   selector: 'app-add-task',
@@ -27,10 +31,12 @@ interface ModalData {
     NzFormModule,
     CommonModule,
     ReactiveFormsModule,
+    FormsModule,
     NzInputModule,
     NzButtonModule,
     NzDatePickerModule,
     NzSelectModule,
+    NzTypographyModule,
   ],
   templateUrl: './add-task.component.html',
   styleUrls: ['./add-task.component.scss'],
@@ -68,11 +74,25 @@ export class AddTaskComponent {
         task_critical: this.data.task?.task_critical,
       });
     }
+    if (this.data.updateMode) {
+      this.parsedStartDate = dayjs(this.data.task?.task_start_time).toDate();
+      this.parsedEndDate = dayjs(this.data.task?.task_end_time).toDate();
+      console.log('parsedData', this.parsedStartDate);
+      console.log(this.data.task);
+
+      this.addTaskForm.patchValue({
+        task_title: this.data.task?.task_title,
+        task_description: this.data.task?.task_description,
+        task_start_time: this?.parsedStartDate,
+        task_end_time: this?.parsedEndDate,
+        task_critical: this.data.task?.task_critical,
+      });
+    }
   }
 
   ngOnInit(): void {
     console.log('nzDate', this.data.date);
-    if (!this.data.infoMode) {
+    if (!(this.data.infoMode || this.data.updateMode)) {
       this.addTaskForm.patchValue({
         task_start_time: this.data.date,
         task_end_time: this.data.date,
