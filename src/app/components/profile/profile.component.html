@@ -2,7 +2,7 @@
   @if (loading()) {
   <nz-spin nzSimple></nz-spin>
   } @else {
-  <nz-card nzTitle="Profile">
+  <nz-card nzTitle="Профиль">
     <div nz-flex nzGap="12px" class="profile-header" nzAlign="center">
       <nz-avatar [nzSize]="64" nzIcon="user"></nz-avatar>
       <div>
@@ -14,16 +14,16 @@
           (nzChange)="handleChange($event)"
         >
           <a>
-            <span nz-icon nzType="upload">Change profile photo</span>
+            <span nz-icon nzType="upload">Изменить фото профиля</span>
           </a>
         </nz-upload>
       </div>
     </div>
-    <nz-descriptions [nzColumn]="1" nzTitle="User Info" nzBordered>
-      <nz-descriptions-item nzTitle="First Name">{{
+    <nz-descriptions [nzColumn]="1" nzTitle="Ваши данные:" nzBordered>
+      <nz-descriptions-item nzTitle="Имя">{{
         profile.firstName
       }}</nz-descriptions-item>
-      <nz-descriptions-item nzTitle="Last Name">{{
+      <nz-descriptions-item nzTitle="Фамилия">{{
         profile.lastName
       }}</nz-descriptions-item>
       <nz-descriptions-item nzTitle="Username">{{
@@ -34,7 +34,7 @@
       }}</nz-descriptions-item>
       <nz-descriptions-item nzTitle="Id">{{ profile.id }}</nz-descriptions-item>
       @if (profile.friendList!.length > 0) {
-      <nz-descriptions-item nzTitle="Friends">
+      <nz-descriptions-item nzTitle="Друзья">
         <ul style="list-style-type: none; padding: 0; margin: 0">
           @for (friend of profile.friendList; track $index) { @if (friend.status
           === 'ACCEPTED') {

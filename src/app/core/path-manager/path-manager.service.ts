@@ -13,17 +13,17 @@ interface MenuItem {
 
 const menuItems: MenuItem[] = [
   {
-    label: 'Home',
+    label: 'Главная',
     icon: 'home',
     path: '/profile',
   },
   {
-    label: 'Friends',
+    label: 'Друзья',
     icon: 'contacts',
     path: '/friends',
   },
   {
-    label: 'Todo',
+    label: 'Задачи',
     icon: 'bell',
     path: '/todo',
   },
